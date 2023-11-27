@@ -44,13 +44,3 @@ def start():
     t.start()
 
 start()
-  
-""" Tests:
-with open('stammdaten.pdf', 'rb') as f:
-    r = requests.post("https://file-reader.shigeocst.repl.co/fileToString", files={'file': f})
-print(r.text)
-
-with open('BspAusschreibung.docx', 'rb') as f:
-    r = requests.post("https://file-reader.shigeocst.repl.co/fileToString", files={'file': f})
-print(r.text)
-"""
