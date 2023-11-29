@@ -1,40 +1,43 @@
-import os, requests, docx, textract # pip install python-docx, textract
+import os, requests
 from flask import Flask, request # pip install flask
 from threading import Thread
 from werkzeug.utils import secure_filename
 
-app = Flask('File Reader')
+app = Flask('ReturnBestProfiles')
 app.config['UPLOAD_FOLDER'] = './uploaded_files'
 
 
 @app.route('/')
 def home():
-  return {"File" : "Reader"}
+  return {"Best" : "Profiles"}
 
-@app.route('/fileToString', methods=['POST'])
-def fileToString():
+@app.route('/returnBestProfiles', methods=['POST'])
+def returnBestProfiles():
   if 'file' not in request.files:
     return {"error" : "file not uploaded", "expected" : "'file' as key for a pdf file"}
   file = request.files['file']
   filename = secure_filename(file.filename)
   file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
   file.save(file_path)
-  
-  if filename.endswith(".docx"):
-    # Methode von Stackoverflow:
-    # https://stackoverflow.com/questions/29309085/read-docx-files-via-python
-    doc = docx.Document(file)
-    allText = ""
-    for docpara in doc.paragraphs:
-        allText += " " + docpara.text
-  elif filename.endswith(".pdf"):
-    # Methode von Stackoverflow:
-    # https://stackoverflow.com/questions/45795089/how-can-i-read-pdf-in-python
-    allText = textract.process(file_path, method='pdfminer')
-  else: 
-    allText = "unsupported File Type"
+
+  # Dokument auslesen:
+  with open(file_path, "rb") as f:
+    Text = requests.post("https://replit.com/@shigeocst/file-reader/fileToString", data={"file" : f}).text
+
+  # DbDecidaloMap aus Text machen:
+  data={"text" : Text}
+  DbDecidaloMap = requests.post("https://stringtodbdecidalomap.shigeocst.repl.co/StringToDbDecidaloMap", data=data)
+
+  ListOfProfileMaps = []
+  profile_ids = 5
+  # Scorer aufrufen für alle Profile
+  for i in range(profile_ids):
+    ListOfProfileMaps.append(requests.post("https://scorer.shigeocst.repl.co/Scorer", data={"ProfileID" : i, "DbDecidaloMap" : DbDecidaloMap}))
+
   os.remove(file_path)
-  return allText
+  # Liste sortiert zurückgeben
+  return sorted(ListOfProfileMaps, key=lambda x: x['Score'], reverse=True)
+
 
 def run():
   app.run(host='0.0.0.0',port=8080)

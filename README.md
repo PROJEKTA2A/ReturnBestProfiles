@@ -1,7 +1,8 @@
-# File Reader
+# Return Best Profiles
 
-Receives a docx or pdf file and returns its text as String
+This is the main component that calls all the other components in order to get the results
 
-Send POST request to https://replit.com/@shigeocst/file-reader/fileToString and a document in read binary mode.
+## Senden der POST Request
 
-Returns the Text as String
+POST files={"file" : AnforderungsFile} to https://returnbestprofiles.shigeocst.repl.co/returnBestProfiles -> returns (sorted) {ListOfProfileMaps}
+Each Map ready to build an offer out of. Comes with "Score", "ProfileID" and the Key Value sets of DB Anforderungen and decidalo Skills
