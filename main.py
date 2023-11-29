@@ -1,4 +1,4 @@
-import asyncio, os, requests, docx, textract # pip install python-docx, textract
+import os, requests, docx, textract # pip install python-docx, textract
 from flask import Flask, request # pip install flask
 from threading import Thread
 from werkzeug.utils import secure_filename
