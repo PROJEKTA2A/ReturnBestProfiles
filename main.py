@@ -1,11 +1,12 @@
 import os, requests
 from flask import Flask, request # pip install flask
+from flask_cors import CORS
 from threading import Thread
 from werkzeug.utils import secure_filename
 
 app = Flask('ReturnBestProfiles')
+CORS(app)
 app.config['UPLOAD_FOLDER'] = './uploaded_files'
-
 
 @app.route('/')
 def home():
@@ -32,7 +33,7 @@ def returnBestProfiles():
   profile_ids = 5
   # Scorer aufrufen für alle Profile
   for i in range(profile_ids):
-    ListOfProfileMaps.append(requests.post("https://scorer.shigeocst.repl.co/Scorer", data={"ProfileID" : i, "DbDecidaloMap" : DbDecidaloMap}))
+    ListOfProfileMaps.append(requests.post("https://scorer.shigeocst.repl.co/Scorer", data={"ProfileID" : i, "DbDecidaloMap" : DbDecidaloMap}).json())
 
   os.remove(file_path)
   # Liste sortiert zurückgeben
