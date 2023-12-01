@@ -1,6 +1,6 @@
 # Return Best Profiles
 
-This is the main component that calls all the other components in order to get the results
+This is the main component that parses the docx or pdf files to text and then calls all the other components in order to get the results
 
 ## Senden der POST Request
 
