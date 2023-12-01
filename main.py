@@ -1,5 +1,5 @@
 import os, requests
-from flask import Flask, request # pip install flask
+from flask import Flask, request
 from flask_cors import CORS
 from threading import Thread
 from werkzeug.utils import secure_filename
