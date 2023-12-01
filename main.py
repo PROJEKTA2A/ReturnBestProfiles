@@ -31,13 +31,13 @@ def returnBestProfiles():
 
   # DbDecidaloMap aus Text machen:
   data={"text" : allText}
-  DbDecidaloMap = requests.post("https://stringtodbdecidalomap.shigeocst.repl.co/StringToDbDecidaloMap", data=data)
+  DbDecidaloMap = requests.post("https://stringtodbdecidalomap.shigeocst.repl.co/StringToDbDecidaloMap", data=data).json()
 
   ListOfProfileMaps = []
   profile_ids = 5
   # Scorer aufrufen für alle Profile
   for i in range(profile_ids):
-    ListOfProfileMaps.append(requests.post("https://scorer.shigeocst.repl.co/Scorer", data={"ProfileID" : i, "DbDecidaloMap" : DbDecidaloMap}).json())
+    ListOfProfileMaps.append(requests.post("https://scorer.shigeocst.repl.co/Scorer", json={"ProfileID" : i, "DbDecidaloMap" : DbDecidaloMap}).json())
 
   # Liste sortiert zurückgeben
   return sorted(ListOfProfileMaps, key=lambda x: x['Score'], reverse=True)
@@ -64,3 +64,7 @@ def FileToString(file_path, file_name):
     # Stackoverflow: https://stackoverflow.com/questions/45795089/how-can-i-read-pdf-in-python
     allText = textract.process(file_path, method='pdfminer')
   return allText
+
+with open('BspAusschreibung.docx', 'rb') as f:
+    r = requests.post("https://returnbestprofiles.shigeocst.repl.co/returnBestProfiles", files={'file': f})
+print(r.text)
