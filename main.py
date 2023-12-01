@@ -1,4 +1,4 @@
-import os, requests
+import os, requests, docx, textract
 from flask import Flask, request
 from flask_cors import CORS
 from threading import Thread
@@ -15,18 +15,22 @@ def home():
 @app.route('/returnBestProfiles', methods=['POST'])
 def returnBestProfiles():
   if 'file' not in request.files:
-    return {"error" : "file not uploaded", "expected" : "'file' as key for a pdf file"}
+    return {"error" : "file not uploaded", "expected" : "'file' as key for a pdf or docx file"}
   file = request.files['file']
-  filename = secure_filename(file.filename)
-  file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+  file_name = secure_filename(file.filename)
+  
+  if not ( file_name.endswith(".pdf") or file_name.endswith(".docx") ):
+    return {"error" : "unsupported file type"}
+    
+  file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
   file.save(file_path)
 
   # Dokument auslesen:
-  with open(file_path, "rb") as f:
-    Text = requests.post("https://replit.com/@shigeocst/file-reader/fileToString", data={"file" : f}).text
+  allText=FileToString(file_path, file_name)
+  os.remove(file_path)
 
   # DbDecidaloMap aus Text machen:
-  data={"text" : Text}
+  data={"text" : allText}
   DbDecidaloMap = requests.post("https://stringtodbdecidalomap.shigeocst.repl.co/StringToDbDecidaloMap", data=data)
 
   ListOfProfileMaps = []
@@ -35,7 +39,6 @@ def returnBestProfiles():
   for i in range(profile_ids):
     ListOfProfileMaps.append(requests.post("https://scorer.shigeocst.repl.co/Scorer", data={"ProfileID" : i, "DbDecidaloMap" : DbDecidaloMap}).json())
 
-  os.remove(file_path)
   # Liste sortiert zurückgeben
   return sorted(ListOfProfileMaps, key=lambda x: x['Score'], reverse=True)
 
@@ -48,3 +51,16 @@ def start():
     t.start()
 
 start()
+
+
+def FileToString(file_path, file_name):
+  if file_name.endswith(".docx"):
+    # Stackoverflow: https://stackoverflow.com/questions/29309085/read-docx-files-via-python
+    doc = docx.Document(file_path)
+    allText = ""
+    for docpara in doc.paragraphs:
+        allText += " " + docpara.text
+  else: #pdf
+    # Stackoverflow: https://stackoverflow.com/questions/45795089/how-can-i-read-pdf-in-python
+    allText = textract.process(file_path, method='pdfminer')
+  return allText
