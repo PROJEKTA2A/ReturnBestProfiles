@@ -32,9 +32,11 @@ def returnBestProfiles():
   # DbDecidaloMap aus Text machen:
   data={"text" : allText}
   DbDecidaloMap = requests.post("https://stringtodbdecidalomap.shigeocst.repl.co/StringToDbDecidaloMap", data=data).json()
+  if not DbDecidaloMap:
+    return {"error" : "keine gültige Ausschreibung"}
 
   ListOfProfileMaps = []
-  profile_ids = 5
+  profile_ids = 3
   # Scorer aufrufen für alle Profile
   for i in range(profile_ids):
     ListOfProfileMaps.append(requests.post("https://scorer.shigeocst.repl.co/Scorer", json={"ProfileID" : i, "DbDecidaloMap" : DbDecidaloMap}).json())
