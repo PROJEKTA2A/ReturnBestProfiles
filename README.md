@@ -9,4 +9,4 @@ Each Map ready to build an offer out of. Comes with "Score", "ProfileID" and the
 
 ### Collaborate on Replit
 
-https://replit.com/join/czvcrnnebn-shigeocst
+https://replit.com/join/vmwcutfkzd-shigeocst
